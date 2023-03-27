@@ -8,7 +8,10 @@ import './index.css'
 import Root from './routes/root'
 import ErrorPage from './error-page'
 import Contact from './routes/contact'
-import { loader as rootLoader } from './routes/root'
+import { loader as rootLoader ,action as rootAction} from './routes/root'
+import { loader as contactLoader } from './routes/contact'
+import EditContact,{action as editAction} from './routes/edit'
+import { destroy } from './routes/destroy'
 
 const router= createBrowserRouter([
   {
@@ -16,14 +19,22 @@ const router= createBrowserRouter([
     element:<Root/>,
     errorElement:<ErrorPage/>,
     loader:rootLoader,
+    action:rootAction,
     children:[
       {
         path:'contacts/:contactId',
-        element:<Contact/>
+        element:<Contact/>,
+        loader:contactLoader
       },
       {
-        path:'deconecter/',
-        element:<div>deconnecter</div>
+        action:destroy,
+        path:'contacts/:contactId/destroy/',
+      },
+      {
+        path:'contacts/:contactId/edit',
+        element:<EditContact/>,
+        loader:contactLoader,
+        action:editAction
       }
     ]
   },
@@ -37,3 +48,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <RouterProvider router={router} />
   </React.StrictMode>,
 )
+

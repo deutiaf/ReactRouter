@@ -1,17 +1,18 @@
-import { Form } from "react-router-dom";
+import { Form ,useLoaderData} from "react-router-dom";
+import { getContact } from "../contacts";
+
+export async function loader({params}){
+    const contact = await getContact(params.contactId)
+
+    return {contact};
+};
+
+
+
 
 export default function Contact(){
-
-    const contact = {
-        first:'your',
-        last:'name',
-        avatar:'https://placekitten.com/g/200/200',
-        twitter:'your_handle',
-        notes:'some notes',
-        favorite:true
-
-
-    };
+    const {contact} = useLoaderData()
+   
 
     return(
         <div id="contact">
@@ -40,16 +41,16 @@ export default function Contact(){
                 {contact.notes && <p>{contact.notes}</p>}
 
                 <div>
-                    <form action="edit">
+                    <Form action='edit '>
                         <button type="submit">Edit</button>
-                    </form>
-                    <form action="destroy" method="post" onSubmit={(event)=>{
+                    </Form>
+                    <Form action="destroy" method="post" onSubmit={(event)=>{
                         if(!confirm('please confirm you want to delete this record ')){
                             event.preventDefault()
                         }
                     }}>
                         <button type="submit">Delete</button>
-                    </form>
+                    </Form>
                 </div>
                      
             </div>

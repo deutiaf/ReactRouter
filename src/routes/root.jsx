@@ -1,8 +1,21 @@
-import { Link, Outlet,useLoaderData } from "react-router-dom";
-import  {getcontacts} from '../contacts'
+import {Link,
+        Outlet,
+        useLoaderData,
+        Form ,
+        redirect,
+        NavLink,
+        useNavigation
+    } from "react-router-dom";
+    
+import {getContacts, createContact} from '../contacts'
 
+export async function action(){
+    const contact= await createContact();
+    return redirect(`/contacts/${contact.id}/edit`)
+}
 export default function Root(){
     const {contacts} = useLoaderData()
+    const navigation = useNavigation()    
 
     return(
         <>
@@ -16,19 +29,48 @@ export default function Root(){
                         </div>
                         
                     </form>
-                    <form action="" method="post">
+                    <Form action="" method="post">
                         <button type="submit">New</button>
-                    </form>
+                    </Form>
 
                 </div>
                 <nav>
-                    <ul>
-                        <li><Link to={'/contacts/1'}>Your Name</Link></li>
-                        <li><Link to={'/contacts/2'}>Your Friend</Link></li>
-                    </ul>
+    
+
+                    {
+                        contacts.length ? (
+                            <ul>
+                                {
+                                    contacts.map((contact)=>(
+                                        <li key={contact.id}>
+                                            <NavLink 
+                                                to={`contacts/${contact.id}`}
+                                                className={({isActive,isPending})=>isActive?'active':isPending?'pending':''}
+                                                >
+                                                {contact.first || contact.last ? (
+                                                    <>
+                                                        {contact.first} {contact.last}
+                                                    </>
+                                                ):(
+                                                    <i>No Name</i>
+                                                )}{' '}
+                                                {contact.favorite && <span>★</span> }
+                                            </NavLink>
+
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        ):(
+                            <p><i>No Contact</i></p>
+                        )
+                    }
                 </nav>
             </div>
-            <div id="detail"> <Outlet/> </div>
+            <div id="detail" 
+                 className={ navigation.state ==='loading'?'loading':''}> 
+                 <Outlet/> 
+            </div>
             
         
         </>
@@ -36,7 +78,7 @@ export default function Root(){
 }
 
 export async function loader(){
-    const contacts = await getcontacts();
+    const contacts = await getContacts();
     return {contacts}
 }
 
